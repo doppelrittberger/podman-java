@@ -21,9 +21,13 @@ RUN mvn -version
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 
+RUN mkdir -p /dev/net \
+ && mknod /dev/net/tun c 10 200 \
+ && chmod 666 /dev/net/tun
+
 USER podman
 
-CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0.2375"]
+CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
 LABEL org.opencontainers.image.title="Podman with maven Docker Image" \
       org.opencontainers.image.description="podman-maven" \
