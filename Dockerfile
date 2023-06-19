@@ -24,6 +24,8 @@ ENV TESTCONTAINERS_RYUK_DISABLED=true
 
 RUN echo "netns=\"slirp4netns\"" >> ~/.config/containers/containers.conf
 
+RUN ln -sfv /usr/bin/podman /usr/bin/docker
+
 CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
 LABEL org.opencontainers.image.title="Podman with maven Docker Image" \
