@@ -17,14 +17,14 @@ RUN curl -fsSL -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.2
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 
+RUN ln -sfv /usr/bin/podman /usr/bin/docker
+
 USER podman
 
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
 RUN echo "netns=\"slirp4netns\"" >> ~/.config/containers/containers.conf
-
-RUN ln -sfv /usr/bin/podman /usr/bin/docker
 
 CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
