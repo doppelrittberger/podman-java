@@ -17,13 +17,11 @@ RUN curl -fsSL -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.2
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 
-RUN mkdir -p /dev/net \
- && mknod /dev/net/tun c 10 200 \
- && chmod 666 /dev/net/tun
+USER podman
 
-RUN echo "netns=\"slirp4netns\"" >> /home/podman/.config/containers/containers.conf
+RUN echo "netns=\"slirp4netns\"" >> ~/.config/containers/containers.conf
 
-CMD ["podman", "system", "service", "--log-level", "debug", "-t", "0", "tcp:0.0.0.0:2375"]
+CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
 LABEL org.opencontainers.image.title="Podman with maven Docker Image" \
       org.opencontainers.image.description="podman-maven" \
