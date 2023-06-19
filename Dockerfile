@@ -19,7 +19,7 @@ ENV MAVEN_HOME /usr/share/maven
 
 USER podman
 
-RUN echo "netns=\"private\"" >> /home/podman/.config/containers/containers.conf
+RUN echo "netns=\"slirp4nents\"" >> /home/podman/.config/containers/containers.conf
 
 CMD ["podman", "system", "service", "--log-level", "debug", "-t", "0", "tcp:0.0.0.0:2375"]
 
