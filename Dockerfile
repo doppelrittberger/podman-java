@@ -19,6 +19,9 @@ ENV MAVEN_HOME /usr/share/maven
 
 USER podman
 
+ENV DOCKERHOST=tcp://localhost:2375
+ENV TESTCONTAINERS_RYUK_DISABLED=true
+
 RUN echo "netns=\"slirp4netns\"" >> ~/.config/containers/containers.conf
 
 CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
