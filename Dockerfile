@@ -21,8 +21,6 @@ RUN mkdir -p /dev/net \
  && mknod /dev/net/tun c 10 200 \
  && chmod 666 /dev/net/tun
 
-USER podman
-
 RUN echo "netns=\"slirp4netns\"" >> /home/podman/.config/containers/containers.conf
 
 CMD ["podman", "system", "service", "--log-level", "debug", "-t", "0", "tcp:0.0.0.0:2375"]
