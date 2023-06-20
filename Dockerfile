@@ -1,7 +1,5 @@
 FROM quay.io/podman/stable
 
-RUN dnf -y install git
-
 RUN curl -fsSL -o /tmp/java.tar.gz https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz \
  && mkdir -p /usr/share/java \
  && tar xvf /tmp/java.tar.gz -C /usr/share/java --strip-components=1 \
@@ -24,9 +22,9 @@ USER podman
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
-RUN echo "netns=\"slirp4netns\"" >> ~/.config/containers/containers.conf
+RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > ~/.config/containers/containers.conf
 
-CMD ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
+ENTRYPOINT ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
 LABEL org.opencontainers.image.title="Podman with maven Docker Image" \
       org.opencontainers.image.description="podman-maven" \
