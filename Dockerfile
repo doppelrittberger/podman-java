@@ -22,7 +22,7 @@ USER podman
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
-RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > ~/.config/containers/containers.conf
+RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > ~/.config/containers/containers.conf
 
 ENTRYPOINT ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
 
