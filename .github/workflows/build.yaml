@@ -12,6 +12,9 @@ name: Publish Docker image
 on:
   release:
     types: [published]
+  schedule:
+    # run daily 0:00
+    - cron: '0 0 * * *'
 
 jobs:
   push_to_registry:
@@ -31,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: doppelrittberger/podman-maven
+          images: doppelrittberger/podman-java
 
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
