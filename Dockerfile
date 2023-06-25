@@ -25,6 +25,8 @@ ENV MAVEN_HOME /usr/share/maven
 ENV GRADLE_HOME /usr/share/gradle
 
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
+RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
+ && chmod +x /usr/bin/start-podman
 
 USER podman
 
@@ -32,8 +34,6 @@ ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
 RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
-RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
- && chmod +x /usr/bin/start-podman
 
 ENTRYPOINT ["start-podman"]
 
