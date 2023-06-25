@@ -22,9 +22,11 @@ USER podman
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
-RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > ~/.config/containers/containers.conf
+RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
+RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375" > /home/podman/start-podman.sh
+RUN chmod +x /home/podman/start-podman.sh
 
-ENTRYPOINT ["podman", "system", "service", "-t", "0", "tcp:0.0.0.0:2375"]
+ENTRYPOINT ["/bin/bash", "/home/podman/start-podman.sh"]
 
 LABEL org.opencontainers.image.title="Podman with maven Docker Image" \
       org.opencontainers.image.description="podman-maven" \
