@@ -26,7 +26,6 @@ ENV GRADLE_HOME /usr/share/gradle
 
 RUN usermod --add-subgids 1000-100000 podman
 RUN usermod --add-subuids 1000-100000 podman
-RUN podman system migrate
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
 RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
