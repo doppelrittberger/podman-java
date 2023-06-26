@@ -24,6 +24,9 @@ ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 ENV GRADLE_HOME /usr/share/gradle
 
+RUN usermod --add-subgids 1000-100000 podman
+RUN usermod --add-subuids 1000-100000 podman
+RUN podman system migrate
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
 RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
@@ -34,8 +37,6 @@ ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
 RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
-
-ENTRYPOINT ["start-podman"]
 
 LABEL org.opencontainers.image.title="Podman with Java Docker Image" \
       org.opencontainers.image.description="podman-java" \
