@@ -8,7 +8,7 @@ RUN curl -fsSL -o /tmp/java.tar.gz https://download.java.net/java/GA/jdk17.0.2/d
  && rm -f /tmp/java.tar.gz \
  && ln -s /usr/share/java/bin/java /usr/bin/java
 
-RUN curl -fsSL -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.3/binaries/apache-maven-3.9.3-bin.tar.gz \
+RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz \
  && mkdir -p /usr/share/maven \
  && tar xvf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
  && rm -f /tmp/maven.tar.gz \
