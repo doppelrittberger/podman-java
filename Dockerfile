@@ -8,7 +8,7 @@ RUN curl -fsSL -o /tmp/java.tar.gz https://github.com/adoptium/temurin17-binarie
  && rm -f /tmp/java.tar.gz \
  && ln -s /usr/share/java/bin/java /usr/bin/java
 
-RUN curl -fsSL -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz \
+RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz \
  && mkdir -p /usr/share/maven \
  && tar xvf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
  && rm -f /tmp/maven.tar.gz \
@@ -32,8 +32,8 @@ ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 ENV GRADLE_HOME /usr/share/gradle
 
-RUN usermod --add-subgids 1000-100000 podman
-RUN usermod --add-subuids 1000-100000 podman
+RUN usermod --add-subgids 65536-165536 podman
+RUN usermod --add-subuids 65536-165536 podman
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
 RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
@@ -43,7 +43,8 @@ USER podman
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
-RUN echo -en "[containers]\nvolumes = [\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls = []\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
+RUN echo -en "[containers]\nvolumes=[\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls=[]\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
+RUN echo -en "[storage]\ndriver=\"overlay\"\n[storage.options.overlay]\nignore_chown_errors=\"true\"" > /home/podman/.config/containers/storage.conf
 
 LABEL org.opencontainers.image.title="Podman with Java Docker Image" \
       org.opencontainers.image.description="podman-java" \
