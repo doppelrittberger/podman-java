@@ -24,9 +24,8 @@ RUN curl -fsSL -o /tmp/go.tar.gz https://go.dev/dl/go1.21.1.linux-amd64.tar.gz \
  && mkdir -p /usr/share/go \
  && tar xvf /tmp/go.tar.gz -C /usr/share/go --strip-components=1 \
  && rm -f /tmp/go.tar.gz \
- && export PATH=$PATH:/usr/share/go/bin
-
-RUN go version
+ && ln -s /usr/share/go/bin/go /usr/bin/go \
+ && ln -s /usr/share/go/bin/gofmt /usr/bin/gofmt
 
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
