@@ -27,6 +27,12 @@ RUN curl -fsSL -o /tmp/go.tar.gz https://go.dev/dl/go1.21.1.linux-amd64.tar.gz \
  && ln -s /usr/share/go/bin/go /usr/bin/go \
  && ln -s /usr/share/go/bin/gofmt /usr/bin/gofmt
 
+RUN curl -fsSL -o /tmp/slirp4netns https://github.com/rootless-containers/slirp4netns/releases/download/v1.3.3/slirp4netns-x86_64 \
+ && mkdir -p /usr/share/slirp4netns \
+ && cp /tmp/slirp4netns /usr/share/slirp4netns \
+ && rm -f /tmp/slirp4netns \
+ && ln -s /usr/share/slirp4netns /usr/bin/slirp4netns
+
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 ENV GRADLE_HOME /usr/share/gradle
