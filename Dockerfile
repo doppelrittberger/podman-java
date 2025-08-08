@@ -1,6 +1,6 @@
 FROM quay.io/podman/stable
 
-RUN dnf -y install bsdtar containernetworking-cni
+RUN dnf -y install bsdtar containernetworking-cni slirp4netns
 
 RUN curl -fsSL -o /tmp/java.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.8_9.tar.gz \
  && mkdir -p /usr/share/java \
