@@ -2,38 +2,21 @@ FROM quay.io/podman/stable
 
 RUN dnf -y install bsdtar containernetworking-cni slirp4netns
 
-RUN curl -fsSL -o /tmp/java.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_x64_linux_hotspot_21.0.9_10.tar.gz \
- && mkdir -p /usr/share/java \
- && tar xvf /tmp/java.tar.gz -C /usr/share/java --strip-components=1 \
- && rm -f /tmp/java.tar.gz \
- && ln -s /usr/share/java/bin/java /usr/bin/java
+COPY scripts/install-tool.sh /usr/local/bin/install-tool
+RUN chmod +x /usr/local/bin/install-tool
 
-RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz \
- && mkdir -p /usr/share/maven \
- && tar xvf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
- && rm -f /tmp/maven.tar.gz \
- && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
-
-RUN curl -fsSL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.3-all.zip \
- && mkdir -p /usr/share/gradle \
- && bsdtar xvf /tmp/gradle.zip -C /usr/share/gradle --strip-components=1 \
- && rm -f /tmp/gradle.zip \
- && ln -s /usr/share/gradle/bin/gradle /usr/bin/gradle
-
-RUN curl -fsSL -o /tmp/go.tar.gz https://go.dev/dl/go1.21.1.linux-amd64.tar.gz \
- && mkdir -p /usr/share/go \
- && tar xvf /tmp/go.tar.gz -C /usr/share/go --strip-components=1 \
- && rm -f /tmp/go.tar.gz \
- && ln -s /usr/share/go/bin/go /usr/bin/go \
- && ln -s /usr/share/go/bin/gofmt /usr/bin/gofmt
+RUN install-tool java https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_x64_linux_hotspot_21.0.9_10.tar.gz java
+RUN install-tool maven https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz mvn
+RUN install-tool gradle https://services.gradle.org/distributions/gradle-8.3-all.zip gradle
+RUN install-tool go https://go.dev/dl/go1.21.1.linux-amd64.tar.gz go gofmt
 
 ENV JAVA_HOME /usr/share/java
 ENV MAVEN_HOME /usr/share/maven
 ENV GRADLE_HOME /usr/share/gradle
 
-RUN usermod --add-subgids 65536-165536 podman
-RUN usermod --add-subuids 65536-165536 podman
-RUN ln -sfv /usr/bin/podman /usr/bin/docker
+RUN usermod --add-subgids 65536-165536 podman \
+ && usermod --add-subuids 65536-165536 podman \
+ && ln -sfv /usr/bin/podman /usr/bin/docker
 RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
 
