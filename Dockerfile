@@ -34,7 +34,30 @@ ENV GRADLE_HOME /usr/share/gradle
 RUN usermod --add-subgids 65536-165536 podman
 RUN usermod --add-subuids 65536-165536 podman
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
-RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
+RUN printf '%s\n' \
+    '#!/bin/bash' \
+    'set -euo pipefail' \
+    '' \
+    'podman system service -t 0 tcp:0.0.0.0:2375 &' \
+    'service_pid=$!' \
+    '' \
+    '# Wait for the API to come up, and fail loudly if the service dies or never becomes ready.' \
+    'for _ in $(seq 1 30); do' \
+    '  if ! kill -0 "$service_pid" 2>/dev/null; then' \
+    '    echo "podman system service exited unexpectedly" >&2' \
+    '    wait "$service_pid"' \
+    '    exit 1' \
+    '  fi' \
+    '  if curl -fsS -o /dev/null "http://localhost:2375/_ping"; then' \
+    '    exit 0' \
+    '  fi' \
+    '  sleep 1' \
+    'done' \
+    '' \
+    'echo "timed out waiting for podman system service to become ready" >&2' \
+    'kill "$service_pid" 2>/dev/null || true' \
+    'exit 1' \
+    > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
 
 USER podman
