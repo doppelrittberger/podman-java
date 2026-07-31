@@ -3,24 +3,28 @@ FROM quay.io/podman/stable
 RUN dnf -y install bsdtar containernetworking-cni slirp4netns
 
 RUN curl -fsSL -o /tmp/java.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.9%2B10/OpenJDK21U-jdk_x64_linux_hotspot_21.0.9_10.tar.gz \
+ && echo "810d3773df7e0d6c4394e4e244b264c8b30e0b05a0acf542d065fd78a6b65c2f  /tmp/java.tar.gz" | sha256sum -c - \
  && mkdir -p /usr/share/java \
  && tar xvf /tmp/java.tar.gz -C /usr/share/java --strip-components=1 \
  && rm -f /tmp/java.tar.gz \
  && ln -s /usr/share/java/bin/java /usr/bin/java
 
 RUN curl -fsSL -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz \
+ && echo "a555254d6b53d267965a3404ecb14e53c3827c09c3b94b5678835887ab404556bfaf78dcfe03ba76fa2508649dca8531c74bca4d5846513522404d48e8c4ac8b  /tmp/maven.tar.gz" | sha512sum -c - \
  && mkdir -p /usr/share/maven \
  && tar xvf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
  && rm -f /tmp/maven.tar.gz \
  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
 RUN curl -fsSL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.3-all.zip \
+ && echo "bb09982fdf52718e4c7b25023d10df6d35a5fff969860bdf5a5bd27a3ab27a9e  /tmp/gradle.zip" | sha256sum -c - \
  && mkdir -p /usr/share/gradle \
  && bsdtar xvf /tmp/gradle.zip -C /usr/share/gradle --strip-components=1 \
  && rm -f /tmp/gradle.zip \
  && ln -s /usr/share/gradle/bin/gradle /usr/bin/gradle
 
 RUN curl -fsSL -o /tmp/go.tar.gz https://go.dev/dl/go1.21.1.linux-amd64.tar.gz \
+ && echo "b3075ae1ce5dab85f89bc7905d1632de23ca196bd8336afd93fa97434cfa55ae  /tmp/go.tar.gz" | sha256sum -c - \
  && mkdir -p /usr/share/go \
  && tar xvf /tmp/go.tar.gz -C /usr/share/go --strip-components=1 \
  && rm -f /tmp/go.tar.gz \
@@ -34,7 +38,7 @@ ENV GRADLE_HOME /usr/share/gradle
 RUN usermod --add-subgids 65536-165536 podman
 RUN usermod --add-subuids 65536-165536 podman
 RUN ln -sfv /usr/bin/podman /usr/bin/docker
-RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:0.0.0.0:2375 &" > /usr/bin/start-podman \
+RUN echo -en "#!/bin/bash\npodman system service -t 0 tcp:127.0.0.1:2375 &" > /usr/bin/start-podman \
  && chmod +x /usr/bin/start-podman
 
 USER podman
