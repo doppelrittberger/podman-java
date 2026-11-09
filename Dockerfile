@@ -9,7 +9,8 @@ ARG MAVEN_VERSION=3.10.0
 ARG GRADLE_VERSION=8.14.6
 ARG GO_VERSION=1.27.3
 
-RUN dnf -y install bsdtar containernetworking-cni slirp4netns
+# gcc and make are the C toolchain cgo needs, e.g. for `go test -race`.
+RUN dnf -y install bsdtar containernetworking-cni slirp4netns gcc make
 
 RUN curl -fsSL -o /tmp/java.tar.gz "${TEMURIN_URL}" \
 && mkdir -p /usr/share/java \
@@ -55,6 +56,8 @@ RUN java -version \
 && mvn -v \
 && gradle -v \
 && go version \
+&& gcc --version \
+&& make --version \
 && native-image --version
 
 RUN usermod --add-subgids 65536-165536 podman
@@ -75,4 +78,5 @@ LABEL org.opencontainers.image.title="Podman with Java Docker Image" \
       org.opencontainers.image.description="podman-java" \
       org.opencontainers.image.url="https://github.com/doppelrittberger/podman-java" \
       org.opencontainers.image.source="https://github.com/doppelrittberger/podman-java" \
-      org.opencontainers.image.license="Apache 2.0" 
+      org.opencontainers.image.license="Apache 2.0"
+ 
