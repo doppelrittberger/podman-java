@@ -10,7 +10,9 @@ ARG GRADLE_VERSION=8.14.6
 ARG GO_VERSION=1.27.3
 
 # gcc and make are the C toolchain cgo needs, e.g. for `go test -race`.
-RUN dnf -y install bsdtar containernetworking-cni slirp4netns gcc make
+# bubblewrap (bwrap) sandboxes untrusted build steps; socat is used for port forwarding in tests.
+# passt provides `pasta`, the rootless network backend: podman 6 dropped slirp4netns support.
+RUN dnf -y install bsdtar containernetworking-cni gcc make bubblewrap socat passt
 
 RUN curl -fsSL -o /tmp/java.tar.gz "${TEMURIN_URL}" \
 && mkdir -p /usr/share/java \
@@ -58,7 +60,10 @@ RUN java -version \
 && go version \
 && gcc --version \
 && make --version \
-&& native-image --version
+&& native-image --version \
+&& bwrap --version \
+&& socat -V \
+&& pasta --version
 
 RUN usermod --add-subgids 65536-165536 podman
 RUN usermod --add-subuids 65536-165536 podman
@@ -71,12 +76,12 @@ USER podman
 ENV DOCKER_HOST="tcp://localhost:2375"
 ENV TESTCONTAINERS_RYUK_DISABLED=true
 
-RUN echo -en "[containers]\nvolumes=[\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls=[]\nnetns=\"slirp4netns\"" > /home/podman/.config/containers/containers.conf
+RUN echo -en "[containers]\nvolumes=[\"/proc:/proc\", \"/sys:/sys\"]\ndefault_sysctls=[]\nnetns=\"pasta\"" > /home/podman/.config/containers/containers.conf
 RUN echo -en "[storage]\ndriver=\"overlay\"\n[storage.options.overlay]\nignore_chown_errors=\"true\"" > /home/podman/.config/containers/storage.conf
 
-LABEL org.opencontainers.image.title="Podman with Java Docker Image" \
-      org.opencontainers.image.description="podman-java" \
-      org.opencontainers.image.url="https://github.com/doppelrittberger/podman-java" \
-      org.opencontainers.image.source="https://github.com/doppelrittberger/podman-java" \
+LABEL org.opencontainers.image.title="Podman Toolchain" \
+      org.opencontainers.image.description="podman-toolchain" \
+      org.opencontainers.image.url="https://github.com/doppelrittberger/podman-toolchain" \
+      org.opencontainers.image.source="https://github.com/doppelrittberger/podman-toolchain" \
       org.opencontainers.image.license="Apache 2.0"
  
